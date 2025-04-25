@@ -826,7 +826,17 @@
 # EXIT #
 ########
 
-9600 S2=TI-S2:SLOW:PRINT "TOOK "S2 " JIFFIES":END
+9600 S2=TI-S2
+9610 SLOW:PRINT "TOOK "S2 " JIFFIES"
+
+9620 POKE 58,255
+9630 CLR
+9640 RST3
+9650 GRAPHIC5
+9660 PRINT ""
+9670 PRINT "BYE!"
+
+9699 END
 
 
 ##############################################
