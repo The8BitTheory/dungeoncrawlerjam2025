@@ -15,3 +15,5 @@ Inputs: `WALLS.VDC` from `crawl128-100c.d81` (unchanged on the 1.0e/1.0f disks),
 
 The engine itself: `libs/dbe0.1.stub.prg` and `libs/dbe0.1.lib.prg` = `engine/build.sh` output
 `build/dbe0.1.stub` and `build/dbe0.1.lib` (on disk `dbe0.1.stub`, `dbe0.1.lib`).
+
+These are the engine 0.1 data of Crawl 128 1.0f. Version 1.1 uses engine 0.2; its data are in `art/dbe02/`.

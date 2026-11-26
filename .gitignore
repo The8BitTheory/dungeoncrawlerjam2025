@@ -1,2 +1,5 @@
 game/compo.reu
 /art/**
+!/art/dbe02/
+!/art/dbe02/**
+/build/
