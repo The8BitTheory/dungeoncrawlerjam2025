@@ -59,7 +59,7 @@ The game is a plain BASIC 7.0 program (`game/crawl.bas`) that uses three librari
 
 | Library | Version | Purpose | Location |
 |---|---|---|---|
-| [VDC-BASIC](https://github.com/The8BitTheory/vdc-basic) | v3 (`vdcbasic3`, branch `v3`) | BASIC extension for the VDC: VRAM fill/copy (`VMF`, `VMC`, `RTV`), bitmap text (`VMP`), transparent soft sprites (`VMS`), command lists (`VCL`), and new in v3 `RXV` (unpack a run-length coded picture file into VRAM). Loaded by `BOOT` | bank 0, `$1C00–$3FFF` |
+| [VDC-BASIC](https://github.com/The8BitTheory/vdc-basic) | v3 (`vdcbasic3`, branch `v3`, with `VCL` entry type 10 from P2e) | BASIC extension for the VDC: VRAM fill/copy (`VMF`, `VMC`, `RTV`), bitmap text (`VMP`), transparent soft sprites (`VMS`), command lists (`VCL`, in v3 also with a jump entry), and new in v3 `RXV` (unpack a run-length coded picture file into VRAM). Loaded by `BOOT` | bank 0, `$1C00–$3FFF` |
 | [dungeonboringengine](https://github.com/The8BitTheory/dungeonboringengine) | 0.2 (`dbe0.2.stub`, `dbe0.2.lib`) | First-person view in machine code. It works out which walls, gems and ghosts are visible and writes the `VCL` list that draws the whole view. Data comes as ready-made files: view geometry (DVG), wall textures (DTS), sprite sets (S2) and the map (DMP). Pictures are unpacked into VRAM by `RXV` | stub bank 0 `$0D00`, lib bank 1 `$B000–$DBFF` |
 | [Blitz! 128](https://github.com/The8BitTheory/blitz-compiler) | `blitzc` (JS re-implementation of the Skyles compiler V860929, fixed build V261123), *Improved 2026* runtime, fast math off, **runtime image 2** | Compiles the BASIC program to Blitz! bytecode. *Image 2* is the build with the program at `$4001`, because VDC-BASIC v3 occupies `$1C00–$3FFF`. The *Improved 2026* runtime is a faster drop-in runtime (variable/array access, NEXT) | program and runtime from `$4001`, runtime vectors `$FC00–$FEFF` |
 
@@ -115,17 +115,20 @@ not be reproduced, so they are not repeated here.
 
 | Configuration | CPU | 1.0f | 1.1 | Change |
 |---|---|---|---|---|
-| VICE, compiled | 2 MHz | 3.44 s | 3.46 s | +0.8 % |
-| VICE, compiled | 1 MHz | 6.41 s | 6.53 s | +1.9 % |
-| VICE, interpreted | 2 MHz | 21.87 s | 22.43 s | +2.5 % |
-| VICE, interpreted | 1 MHz | 44.38 s | 45.60 s | +2.7 % |
-| Z64K, compiled | 2 MHz | 4.32 s | 4.27 s | -1.2 % |
-| Z64K, compiled | 1 MHz | 7.70 s | 7.75 s | +0.6 % |
+| VICE, compiled | 2 MHz | 3.44 s | 3.40 s | -1.0 % |
+| VICE, compiled | 1 MHz | 6.41 s | 6.43 s | +0.3 % |
+| VICE, interpreted | 2 MHz | 21.87 s | 22.24 s | +1.7 % |
+| VICE, interpreted | 1 MHz | 44.38 s | 45.22 s | +1.9 % |
+| Z64K, compiled | 2 MHz | 4.32 s | 4.26 s | -1.5 % |
+| Z64K, compiled | 1 MHz | 7.70 s | 7.63 s | -0.9 % |
 
 "2 MHz" is the default of the game (FAST), "1 MHz" is after pressing **1** (SLOW). Interpreted runs were not made in
 Z64K.
 
-Version 1.1 is practically as fast as 1.0f (VICE +0.8 to +2.7 %, Z64K -1.2 to +0.6 %), not faster. It draws exactly the same pictures. The point of 0.2 is not speed in Crawl, but the features for new
+Version 1.1 is practically as fast as 1.0f (VICE -1.0 to +1.9 %, Z64K -1.5 to -0.9 %). The 1.1 numbers are with the
+fixed VCL list address (`BUFSET` X = 1: the engine puts a VCL jump, entry type 10 of VDC-BASIC v3, at the buffer start, so
+the game calls `::VCL VB` with a variable set once instead of reading the address after every `VIEW`) and a stub that
+saves the zero page only for `VIEW` and `GEOMSET`; before these two changes 1.1 was 0.8 to 2.8 % slower (VICE). It draws exactly the same pictures. The point of 0.2 is not speed in Crawl, but the features for new
 games (floor and ceiling textures, windows with a landscape, sky, pits, animated sprites, see the
 [engine demo](https://github.com/The8BitTheory/dungeonboringengine/tree/main/demo)).
 
