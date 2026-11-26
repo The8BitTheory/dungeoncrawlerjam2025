@@ -27,6 +27,6 @@ order of the GETIN prompts is used (menu first, then game prompts).
 
 | Command | Purpose |
 |---|---|
-| `test/vice_crawl.py --timing --ports 6641,6642 [--reps 2] [--only 110]` | VICE: 8 configs ({1.0f, 1.1} x {comp, interp} x {2 MHz, 1 MHz}) on the unchanged release builds, per key stopwatch cycles (monitor `stopwatch`), calibration by IRQ stops (cycles per frame, jiffies per frame via `TI`); result `build/timing/timing.json` (with the 1.1 lib size/sha). `--only 110` repeats only 1.1 (`timing_110.json`). |
+| `test/vice_crawl.py --timing --ports 6641,6642 [--reps 2] [--record NAME]` | VICE: the 4 configs of 1.1 ({comp, interp} x {2 MHz, 1 MHz}) on the unchanged release builds, per key stopwatch cycles (monitor `stopwatch`), calibration by IRQ stops (cycles per frame, jiffies per frame via `TI`); result `build/timing/timing.json` (with the 1.1 lib size/sha). The baselines are not measured again (VICE is deterministic): the run is compared with the recorded states in `test/timing-results.json` (1.0f, old lib, P6i, variant A, P6j, P2f, with lib/VDC-BASIC sha and date); `--record NAME` adds it as a new state. `--configs 100f-comp-2mhz,...` measures 1.0f explicitly. |
 | `test/vice_crawl.py --ghost [--only 110]` | VICE: whole picture time of the scene "ghost near, sideways" (player 67, dir 3, ghost cell 86) 1.0f against 1.1 (hooked builds); `build/timing/ghost.json`. |
 | `test/z64k_crawl.py [--only 110] [--reps 2]` | Z64K timedemo (`patchbas.py --timedemo [--slow]`): T9 in jiffies from the file TIMES; `build/z64k/z64k.json`. |

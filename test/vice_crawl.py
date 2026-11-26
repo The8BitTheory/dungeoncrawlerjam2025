@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Pixel test of Crawl 128 1.1 against 1.0f (P7c, docs/specs/P7-crawl.md 6.3).
 
-usage: test/vice_crawl.py --timing [--ports 6641,6642] [--reps 2] [--configs LIST] [--out DIR]   (P7d, see timing_main)
+usage: test/vice_crawl.py --timing [--ports 6641,6642] [--reps 2] [--configs LIST] [--record NAME] [--out DIR]   (P7d, see timing_main;
+                          measures 1.1 only and compares with test/timing-results.json, --configs 100f-... measures 1.0f)
        test/vice_crawl.py [--runs ref,orig,interp,comp] [--ports 6637,6638] [--reuse] [--control]
                           [--out DIR] [--timeout S] [--no-build] [--scenes-only | --walk-only]
 
@@ -578,6 +579,43 @@ def drive_timing(name, disk, port, slow, tmo, nirq=20):
 
 
 TIMING_CONFIGS = [f'{v}-{k}-{mhz}' for v in ('100f', '110') for k in ('comp', 'interp') for mhz in ('2mhz', '1mhz')]
+TIMING_RESULTS = os.path.join(HERE, 'timing-results.json')     # recorded states (1.0f, P6i, P6j, P2f ...)
+
+
+def timing_compare(results, record=None):
+    """Compare the measured 1.1 sums with the recorded states in test/timing-results.json (VICE is deterministic,
+    the baselines are not measured again). record: add the run as a new state with this name."""
+    import json, hashlib
+    db = json.load(open(TIMING_RESULTS))
+    sums = {}
+    for key, r in results.items():
+        c = key.split('#')[0]
+        if c.startswith('110-') and not r['errors'] and len(r['keys']) == len(WALK):
+            sums.setdefault(c[4:], []).append(sum(r['keys']))
+    if not sums:
+        return
+    for c, v in sums.items():
+        if len(set(v)) > 1:
+            print(f'note: {c} repeats differ: {v}')
+    refs = [st for st in db['states'] if 'vice_cycles' in st]
+    print('VICE cycles, 1.1 now against recorded states:')
+    for c in ('comp-2mhz', 'comp-1mhz', 'interp-2mhz', 'interp-1mhz'):
+        if c not in sums:
+            continue
+        now = sum(sums[c]) / len(sums[c])
+        cmp = '  '.join(f'{st["name"]} {st["vice_cycles"][c]} ({(now / st["vice_cycles"][c] - 1) * 100:+.1f} %)'
+                        for st in (refs[0], refs[-1]) if c in st['vice_cycles'])
+        print(f'  {c:12} {now:12.0f} ({now / 985248:.2f} s)  {cmp}')
+    if record:
+        sha = lambda f: hashlib.sha256(open(os.path.join(ROOT, 'libs', f), 'rb').read()).hexdigest()
+        db['states'].append(dict(name=record, date=time.strftime('%F'),
+                                 lib_size=os.path.getsize(os.path.join(ROOT, 'libs', 'dbe0.2.lib.prg')),
+                                 lib_sha256=sha('dbe0.2.lib.prg'), stub_sha256=sha('dbe0.2.stub.prg'),
+                                 vdcbasic_size=os.path.getsize(os.path.join(ROOT, 'libs', 'vdcbasic3.prg')),
+                                 vdcbasic_sha256=sha('vdcbasic3.prg'),
+                                 vice_cycles={c: round(sum(v) / len(v)) for c, v in sums.items()}))
+        json.dump(db, open(TIMING_RESULTS, 'w'), indent=1)
+        print(f'recorded as "{record}" in {TIMING_RESULTS} (add the Z64K jiffies by hand)')
 
 
 def timing_main(a):
@@ -586,7 +624,8 @@ def timing_main(a):
                           else os.path.join(ROOT, 'build', 'timing'))
     os.makedirs(out, exist_ok=True)
     disks = build_timing(out)
-    configs = a.configs.split(',') if a.configs else TIMING_CONFIGS
+    # default: only 1.1; the baselines (1.0f, earlier 1.1 states) come from test/timing-results.json
+    configs = a.configs.split(',') if a.configs else [c for c in TIMING_CONFIGS if c.startswith('110')]
     if a.only:
         configs = [c for c in configs if c.startswith(a.only)]
     import hashlib
@@ -621,6 +660,7 @@ def timing_main(a):
     results.pop('_lib')
     bad = [k for k, r in results.items() if r['errors'] or len(r['keys']) != len(WALK)]
     print('PROBLEMS in', bad if bad else 'none')
+    timing_compare(results, a.record)
     return 1 if bad else 0
 
 
@@ -701,6 +741,7 @@ def main():
     ap.add_argument('--ghost', action='store_true', help='P7a review: ghost-near-sideways scene, whole picture time')
     ap.add_argument('--timing', action='store_true', help='P7d: cycle timing of the unchanged release builds')
     ap.add_argument('--reps', type=int, default=2)
+    ap.add_argument('--record', default=None, help='timing: add the 1.1 result as a new state to test/timing-results.json')
     ap.add_argument('--only', default=None, help='timing: only configs starting with this (e.g. 110 for a 1.1 repeat)')
     ap.add_argument('--configs', default=None, help='timing: comma list of ' + ','.join(TIMING_CONFIGS))
     ap.add_argument('--runs', default='ref,orig,interp,comp')

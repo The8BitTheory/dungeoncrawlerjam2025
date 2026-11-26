@@ -115,17 +115,20 @@ not be reproduced, so they are not repeated here.
 
 | Configuration | CPU | 1.0f | 1.1 | Change |
 |---|---|---|---|---|
-| VICE, compiled | 2 MHz | 3.44 s | 3.40 s | -1.0 % |
-| VICE, compiled | 1 MHz | 6.41 s | 6.43 s | +0.3 % |
-| VICE, interpreted | 2 MHz | 21.87 s | 22.24 s | +1.7 % |
-| VICE, interpreted | 1 MHz | 44.38 s | 45.22 s | +1.9 % |
-| Z64K, compiled | 2 MHz | 4.32 s | 4.26 s | -1.5 % |
-| Z64K, compiled | 1 MHz | 7.70 s | 7.63 s | -0.9 % |
+| VICE, compiled | 2 MHz | 3.44 s | 3.15 s | -8.3 % |
+| VICE, compiled | 1 MHz | 6.41 s | 5.96 s | -7.1 % |
+| VICE, interpreted | 2 MHz | 21.87 s | 21.98 s | +0.5 % |
+| VICE, interpreted | 1 MHz | 44.38 s | 44.74 s | +0.8 % |
+| Z64K, compiled | 2 MHz | 4.32 s | 3.82 s | -11.5 % |
+| Z64K, compiled | 1 MHz | 7.70 s | 7.13 s | -7.3 % |
 
 "2 MHz" is the default of the game (FAST), "1 MHz" is after pressing **1** (SLOW). Interpreted runs were not made in
 Z64K.
 
-Version 1.1 is practically as fast as 1.0f (VICE -1.0 to +1.9 %, Z64K -1.5 to -0.9 %). The 1.1 numbers are with the
+The 1.1 numbers are with VDC-BASIC v3 P2f: the row loop of `VMC`/`VMF` (VCL entries 1-5, also VMS type 2) runs
+without JSR and writes the VDC registers directly, 20-30 % fewer cycles per row. Compiled, 1.1 is now 7 to 12 %
+faster than 1.0f; interpreted it is as fast (+0.5 to +0.8 %, the time goes into BASIC). Before P2f 1.1 was practically
+as fast as 1.0f (VICE 3.40 / 6.43 / 22.24 / 45.22 s, Z64K 4.26 / 7.63 s; VICE -1.0 to +1.9 %, Z64K -1.5 to -0.9 %). These numbers are also with the
 fixed VCL list address (`BUFSET` X = 1: the engine puts a VCL jump, entry type 10 of VDC-BASIC v3, at the buffer start, so
 the game calls `::VCL VB` with a variable set once instead of reading the address after every `VIEW`) and a stub that
 saves the zero page only for `VIEW` and `GEOMSET`; before these two changes 1.1 was 0.8 to 2.8 % slower (VICE). It draws exactly the same pictures. The point of 0.2 is not speed in Crawl, but the features for new

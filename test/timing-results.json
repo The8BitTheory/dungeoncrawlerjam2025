@@ -1,0 +1,111 @@
+{
+ "_doc": "Crawl 128 timing results (walk of 39 keys, sum key press -> next prompt). VICE: monitor stopwatch, 1 MHz cycles even in FAST, identical double runs (VICE is deterministic). Z64K: T9 jiffies of the time-demo build (test/z64k_crawl.py), 1 s = 60.15 jiffies. Seconds = cycles / 985248. Sources: dungeonboringengine/docs/specs/P7-crawl.md 12.4. test/vice_crawl.py --timing compares a new 1.1 run against these values instead of measuring the baselines again; --record NAME adds the run as a new state.",
+ "states": [
+  {
+   "name": "1.0f",
+   "date": "2026-11-25",
+   "disk": "crawl128-100f.d81",
+   "disk_sha256": "5a2c13fccb54439437903696fa8234c2326053cba2632c3be98c1c76b6efe23e",
+   "engine": "dbe 0.1",
+   "vdcbasic": "v2h",
+   "vice_cycles": {
+    "comp-2mhz": 3385841,
+    "comp-1mhz": 6318623,
+    "interp-2mhz": 21550022,
+    "interp-1mhz": 43727387
+   },
+   "z64k_jiffies": {
+    "comp-2mhz": 260,
+    "comp-1mhz": 463
+   }
+  },
+  {
+   "name": "1.1 old lib (before P6i)",
+   "date": "2026-11-25",
+   "lib_size": 11057,
+   "lib_sha256": null,
+   "vdcbasic_sha256": null,
+   "vice_seconds": {
+    "comp-2mhz": 3.48,
+    "comp-1mhz": 6.54,
+    "interp-2mhz": 22.43,
+    "interp-1mhz": 45.61
+   },
+   "z64k_seconds": {
+    "comp-2mhz": 4.31,
+    "comp-1mhz": 7.76
+   },
+   "note": "only seconds recorded"
+  },
+  {
+   "name": "1.1 P6i",
+   "date": "2026-11-26",
+   "commit": "d15e5ad",
+   "lib_size": 10984,
+   "lib_sha256": "9a6367153e20509b8f04677dfa215bc39f08cf170eef1fd833eb8142ba4f48ef",
+   "vdcbasic_size": 4753,
+   "vdcbasic_sha256": "6fef5e2f46419dcc99c12256746b1d2e06bf32a62ef966cb983c6a20855f3c11",
+   "vice_cycles": {
+    "comp-2mhz": 3411580,
+    "comp-1mhz": 6438389,
+    "interp-2mhz": 22098503,
+    "interp-1mhz": 44925517
+   },
+   "z64k_jiffies": {
+    "comp-2mhz": 257,
+    "comp-1mhz": 466
+   }
+  },
+  {
+   "name": "1.1 variant A (copy to B0, discarded)",
+   "date": "2026-11-26",
+   "lib_sha256": null,
+   "vdcbasic_sha256": null,
+   "vice_cycles": {
+    "comp-2mhz": 3372356,
+    "comp-1mhz": 6346449,
+    "interp-2mhz": 21915560,
+    "interp-1mhz": 44566024
+   }
+  },
+  {
+   "name": "1.1 P6j (jump, VCL type 10)",
+   "date": "2026-11-26",
+   "commit": "32b80d4",
+   "lib_size": 11067,
+   "lib_sha256": "e996190d3f1babadbc1993023a192dfb0b02d444a93809367ca4189250ddfd36",
+   "stub_sha256": "812a2bc8b968a63117ea3366ad930966147cc2645ab12c8b3f91b5c963ff0095",
+   "vdcbasic_size": 4771,
+   "vdcbasic_sha256": "8c3a1af10dba78434ca7efbd3ab99cf67409297a89a07f15954b7895d3ce32cc",
+   "vice_cycles": {
+    "comp-2mhz": 3353392,
+    "comp-1mhz": 6337353,
+    "interp-2mhz": 21908130,
+    "interp-1mhz": 44549257
+   },
+   "z64k_jiffies": {
+    "comp-2mhz": 256,
+    "comp-1mhz": 459
+   }
+  },
+  {
+   "name": "1.1 P2f (VDC-BASIC VMC/VMF row loop)",
+   "date": "2026-11-26",
+   "lib_size": 11067,
+   "lib_sha256": "e996190d3f1babadbc1993023a192dfb0b02d444a93809367ca4189250ddfd36",
+   "stub_sha256": "812a2bc8b968a63117ea3366ad930966147cc2645ab12c8b3f91b5c963ff0095",
+   "vdcbasic_size": 4842,
+   "vdcbasic_sha256": "0feebb395e77fb92fddaea281525aecf1b3b192ef8a69ffc4b030509522d7c51",
+   "vice_cycles": {
+    "comp-2mhz": 3104710,
+    "comp-1mhz": 5870128,
+    "interp-2mhz": 21652569,
+    "interp-1mhz": 44078865
+   },
+   "z64k_jiffies": {
+    "comp-2mhz": 230,
+    "comp-1mhz": 429
+   }
+  }
+ ]
+}
