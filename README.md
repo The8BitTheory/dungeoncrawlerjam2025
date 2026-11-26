@@ -195,7 +195,6 @@ Tests (VICE `x128` and, for the time measurement, Z64K, see `test/README.md`):
 
 ```sh
 test/vice_crawl.py --ports 6637,6638     # 1.1 interpreted and compiled against 1.0f: VRAM and registers at every prompt
-test/crawl_smoke.py build/crawl128-110.d81   # walk of 39 keys and the automap without BASIC error
 test/vice_crawl.py --timing --ports 6641,6642    # VICE time measurement
 test/z64k_crawl.py                               # Z64K time measurement
 ```

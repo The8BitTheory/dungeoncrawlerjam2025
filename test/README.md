@@ -2,7 +2,6 @@
 
 | Script | Purpose |
 |---|---|
-| `crawl_smoke.py DISK.d81` | Smoke test (P7b): boot a disk in VICE x128, play the walk of 39 keys, open the automap, report memory. |
 | `vice_crawl.py` | Pixel test (P7c): Crawl 1.1 (interpreted, compiled) against 1.0f at every game prompt (see the docstring). |
 | `patchbas.py IN.bas OUT.bas` | Adds the test hook (lines 4596/4597, called at the start of 4600) to a Crawl source; used by `vice_crawl.py`. The repository sources stay unchanged. |
 
