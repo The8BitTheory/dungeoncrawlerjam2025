@@ -72,7 +72,7 @@ def rebuild_libs():
 def rebuild_assets():
     out = os.path.join(BUILD, 'assets')
     shutil.rmtree(out, ignore_errors=True)
-    run([sys.executable, os.path.join(DBE, 'tools', 'crawlconv.py'), '--d81', DISK_1_0F, out])
+    run(['node', os.path.join(DBE, 'tools', 'js', 'cli', 'dbe.js'), 'crawlconv', '--d81', DISK_1_0F, out])   # engine tools are JS since P8
     os.makedirs(ART, exist_ok=True)
     run([sys.executable, os.path.join(HERE, 'vrlpics.py'), '--d81', DISK_1_0F, ART])
     for f in sorted(os.listdir(out)):

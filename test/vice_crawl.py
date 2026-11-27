@@ -24,7 +24,7 @@ holds: first prompt = menu (RETURN), every further prompt is a game prompt (the 
 Checks (compare phase, all on the saved dumps):
   1. interp and comp equal ref at every prompt (VRAM + registers; walk, automap, scenes)
   2. orig equals ref in the walk
-  3. crawl01 (engine repository, model of VIEW 0.1) equals the real 1.0f window (rows 5-99 and, where the model
+  3. crawl01 (engine repository, model of VIEW 0.1; JS via tools/js/cli/crawl01-model.js, one node run) equals the real 1.0f window (rows 5-99 and, where the model
      writes, row 100; columns 6-73) at every prompt with the position/ghost recorded by the hook
   4. automap: the map area at the M prompt is the whole map (1.0f behaviour, AM%=0): expected bytes from the map
      (free 255, wall $11), blinking player marker excluded
@@ -33,7 +33,7 @@ Checks (compare phase, all on the saved dumps):
 Port rule: --ports, else DBE_VICE_PORT (6631-6649), bind check; only the own VICE processes are ended.
 Exit code 0 = all checks green.
 """
-import argparse, concurrent.futures as cf, os, pickle, re, shutil, subprocess, sys, time
+import argparse, concurrent.futures as cf, json, os, pickle, re, shutil, subprocess, sys, time
 
 sys.dont_write_bytecode = True
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +41,6 @@ ROOT = os.path.dirname(HERE)
 VB3 = os.environ.get('VDCBASIC_DIR', os.path.expanduser('~/git/vdc-basic'))
 DBE = os.environ.get('DBE_DIR', os.path.expanduser('~/git/dungeonboringengine'))
 sys.path.insert(0, os.path.join(VB3, 'test'))
-sys.path.insert(0, os.path.join(DBE, 'tools'))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import vicemon as vm
 
@@ -247,19 +246,35 @@ def drive(name, disk, port, scenes, keys, tmo, out):
 
 # ---------------------------------------------------------------- scenes from the map
 
+class Env:
+    """Map data of the crawl01 model (engine repository, JS since P8: tools/js/cli/crawl01-model.js)."""
+    def __init__(self, d):
+        self.w, self.h, self.cells0, self.exits = d['w'], d['h'], d['cells0'], d['exits']
+
+
+MODEL = os.path.join(DBE, 'tools', 'js', 'cli', 'crawl01-model.js')
+
+
+def model_call(cmd, data=None):
+    r = subprocess.run(['node', MODEL, cmd, '--d81', DISK_1_0F], input=data, capture_output=True, text=True)
+    if r.returncode:
+        sys.exit(f'crawl01 model ({MODEL}): {r.stderr.strip()}')
+    return json.loads(r.stdout)
+
+
 def make_env(work):
-    import crawl01
-    import crawlconv
-    d = os.path.join(work, 'in')
-    files = crawlconv.read_d81(DISK_1_0F, d)
-    return crawl01.Env(files), crawl01
+    return Env(model_call('env')), None
+
+
+def model_render(reqs):
+    """One node run for all requests: VRAM rows 5-100 (bytes 400-8079) per request, as bytes."""
+    return [bytes.fromhex(h) for h in model_call('render', json.dumps(reqs))] if reqs else []
 
 
 def collected_cells(env, hooks):
     """Cell values after the given hook positions (gem on the player cell is taken, exit opens)."""
-    import dbemap
     cells = list(env.cells0)
-    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['exit']]
+    ex = env.exits
     left = sum(1 for c in cells if c == 2)
     for pos in hooks:
         if cells[pos] == 2:
@@ -409,8 +424,8 @@ def compare(runs, scenes, env, crawl01, control=None, log=print):
     nbad, nchk = [], 0
     cells = list(env.cells0)
     left = sum(1 for c in cells if c == 2)
-    import dbemap
-    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['exit']]
+    ex = env.exits
+    reqs, todo = [], []
     for i, p in enumerate(ref):
         pos, pf, gp, gf = p['hook']
         if p['tag'] in ('map',):
@@ -424,10 +439,12 @@ def compare(runs, scenes, env, crawl01, control=None, log=print):
         if p['tag'].startswith('scene') and scenes[int(p['tag'][5:])]['label'].startswith('ghost on gem') \
                 and cells[gp] != 2:
             log(f'warning: {p["tag"]}: the walk has already taken the gem under the ghost')
-        vis, err = env.model.view(cells, env.w, env.h, pos, pf, [(gp, 0, gf)])
-        base = bytearray(env.base1)                 # assets in place, random elsewhere
-        base[8000:8080] = b'\xa5' * 80              # row 100: only the bytes the model writes count
-        env.model.render(base, vis)
+        reqs.append({'cells': list(cells), 'pos': pos, 'v': pf, 'ghosts': [[gp, 0, gf]]})
+        todo.append((i, p))
+    # model: base1 (assets in place, random elsewhere), row 100 preset to $A5 (only the bytes the model writes count)
+    for (i, p), rows in zip(todo, model_render(reqs)):
+        base = bytearray(8080)
+        base[400:8080] = rows
         nchk += 1
         got = p['vram']
         diff = []
