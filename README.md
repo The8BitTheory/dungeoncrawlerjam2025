@@ -176,7 +176,7 @@ Needs Python 3, Node.js and VICE's `c1541`, plus local clones next to this repos
 `vdcbasic3.bin`),
 [blitz-compiler](https://github.com/The8BitTheory/blitz-compiler) and
 [dungeonboringengine](https://github.com/The8BitTheory/dungeonboringengine) (`engine/build.sh`, tools). The
-paths can be set with `VDCBASIC_DIR`, `BLITZC` and `DBE_DIR`.
+paths can be set with `VDCBASIC_DIR`, `BLITZC` and `DBE_DIR`; the Blitz! runtime with `BLITZ_RUNTIME` (default `improved`; the game needs it free of bank-1 code at `$FC00-$FEFF`, see source comments).
 
 ```sh
 python3 tools/mkdisk.py build/crawl128-110.d81            # compiled game (Blitz! image 2) on a d81, with boot sector

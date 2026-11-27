@@ -27,6 +27,7 @@ ROOT = os.path.dirname(HERE)
 HOME = os.path.expanduser('~')
 DBE = os.environ.get('DBE_DIR', os.path.join(HOME, 'git', 'dungeonboringengine'))
 VB3 = os.environ.get('VDCBASIC_DIR', os.path.join(HOME, 'git', 'vdc-basic'))
+BLITZ_RUNTIME = os.environ.get('BLITZ_RUNTIME', 'improved')   # original | fixed | improved
 BLITZC = os.environ.get('BLITZC', os.path.join(HOME, 'git', 'blitz-compiler', 'blitz128', 'blitzc', 'js', 'cli.js'))
 BUILD = os.path.join(ROOT, 'build')
 ART = os.path.join(ROOT, 'art', 'dbe02')
@@ -110,7 +111,7 @@ def main():
         run([sys.executable, tool, bas, src])
         bdir = os.path.join(BUILD, 'blitz')
         shutil.rmtree(bdir, ignore_errors=True)
-        run([find_node(), BLITZC, src, bdir, '--runtime', 'improved', '--fastmath', 'off'])
+        run([find_node(), BLITZC, src, bdir, '--runtime', BLITZ_RUNTIME, '--fastmath', 'off'])
         game = os.path.join(bdir, 'c.prg')
         if open(game, 'rb').read(2) != b'\x01\x40':
             sys.exit('mkdisk: c.prg does not start at $4001 (kein Image 2)')

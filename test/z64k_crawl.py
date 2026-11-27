@@ -48,7 +48,7 @@ def build(work, ver, slow, interp):
         if not interp:
             bd = os.path.join(work, f'td_{tag}_bl')
             shutil.rmtree(bd, ignore_errors=True)
-            sh([mkdisk.find_node(), mkdisk.BLITZC, prg, bd, '--runtime', 'improved', '--fastmath', 'off'])
+            sh([mkdisk.find_node(), mkdisk.BLITZC, prg, bd, '--runtime', mkdisk.BLITZ_RUNTIME, '--fastmath', 'off'])
             prg = os.path.join(bd, 'c.prg')
         shutil.copy(D64_1_0F, d64)
         sh(['c1541', d64, '-delete', 'crawl128', '-write', prg, 'crawl128'])

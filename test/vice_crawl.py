@@ -83,13 +83,14 @@ def build_all(work, verbose=True):
     hk = os.path.join(work, 'crawl_100f_hook.bas')
     sh([sys.executable, os.path.join(HERE, 'patchbas.py'), src, hk])
     nd, blitzc = node()
+    import mkdisk
 
     def compile_(bas, tag):
         prg = os.path.join(work, tag + '.prg')
         sh([sys.executable, os.path.join(ROOT, 'tools', 'bas2prg.py'), bas, prg])
         bd = os.path.join(work, tag + '_bl')
         shutil.rmtree(bd, ignore_errors=True)
-        sh([nd, blitzc, prg, bd, '--runtime', 'improved', '--fastmath', 'off'])
+        sh([nd, blitzc, prg, bd, '--runtime', mkdisk.BLITZ_RUNTIME, '--fastmath', 'off'])
         return os.path.join(bd, 'c.prg')
 
     plain = compile_(src, 'ref_plain')
@@ -258,7 +259,7 @@ def collected_cells(env, hooks):
     """Cell values after the given hook positions (gem on the player cell is taken, exit opens)."""
     import dbemap
     cells = list(env.cells0)
-    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['ausgang']]
+    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['exit']]
     left = sum(1 for c in cells if c == 2)
     for pos in hooks:
         if cells[pos] == 2:
@@ -409,7 +410,7 @@ def compare(runs, scenes, env, crawl01, control=None, log=print):
     cells = list(env.cells0)
     left = sum(1 for c in cells if c == 2)
     import dbemap
-    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['ausgang']]
+    ex = [e.cell for e in env.m.events if e.type == dbemap.EVENT_TYPES['exit']]
     for i, p in enumerate(ref):
         pos, pf, gp, gf = p['hook']
         if p['tag'] in ('map',):

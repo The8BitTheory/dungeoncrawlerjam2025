@@ -1,5 +1,5 @@
 {
- "_doc": "Crawl 128 timing results (walk of 39 keys, sum key press -> next prompt). VICE: monitor stopwatch, 1 MHz cycles even in FAST, identical double runs (VICE is deterministic). Z64K: T9 jiffies of the time-demo build (test/z64k_crawl.py), 1 s = 60.15 jiffies. Seconds = cycles / 985248. Sources: dungeonboringengine/docs/specs/P7-crawl.md 12.4. test/vice_crawl.py --timing compares a new 1.1 run against these values instead of measuring the baselines again; --record NAME adds the run as a new state.",
+ "_doc": "All states were recorded with the Blitz runtime improved (the scripts passed --runtime improved explicitly; override via BLITZ_RUNTIME only for comparisons with other runtimes, never mix). Crawl 128 timing results (walk of 39 keys, sum key press -> next prompt). VICE: monitor stopwatch, 1 MHz cycles even in FAST, identical double runs (VICE is deterministic). Z64K: T9 jiffies of the time-demo build (test/z64k_crawl.py), 1 s = 60.15 jiffies. Seconds = cycles / 985248. Sources: dungeonboringengine/docs/specs/P7-crawl.md 12.4. test/vice_crawl.py --timing compares a new 1.1 run against these values instead of measuring the baselines again; --record NAME adds the run as a new state.",
  "states": [
   {
    "name": "1.0f",
