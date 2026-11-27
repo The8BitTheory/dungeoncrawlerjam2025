@@ -200,7 +200,7 @@ test/z64k_crawl.py                               # Z64K time measurement
 ```
 
 The engine files are built in [dungeonboringengine](https://github.com/The8BitTheory/dungeonboringengine)
-(`engine/build.sh`; the converter for the game data is `tools/crawlconv.py` there).
+(`engine/build.sh`; the converter for the game data is `crawlconv` there, `node tools/js/cli/dbe.js crawlconv`).
 
 ## Thanks
 

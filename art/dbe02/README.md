@@ -1,12 +1,12 @@
 # Assets for dungeonboringengine 0.2 (Crawl 128 1.1)
 
-Made by `tools/crawlconv.py` of the engine repository (dungeonboringengine, branch `step2/textures-0.2`, P7a) from
+Made by `crawlconv` of the engine repository (Python until 2026-11-27, now `node tools/js/cli/dbe.js crawlconv`) (dungeonboringengine, branch `step2/textures-0.2`, P7a) from
 the unchanged 1.0f data on `crawl128-100f.d81` (`walls.vdc`, `walls.wsm`, `ghost.spr`, `ghosts.vdc`, `gem.spr`,
 `font3o.vdc`). The pictures are the same as in 1.0f. `crawlconv.md` is the converter's report (elements, anchors,
 sizes, VRAM sum).
 
-Rebuild: `python3 tools/mkdisk.py --rebuild-assets OUT.d81` (calls `crawlconv.py --d81 crawl128-100f.d81 build/assets`
-and copies the result here), or by hand: `python3 $DBE_DIR/tools/crawlconv.py --d81 crawl128-100f.d81 OUT_DIR`.
+Rebuild: `python3 tools/mkdisk.py --rebuild-assets OUT.d81` (calls `dbe.js crawlconv --d81 crawl128-100f.d81 build/assets`
+and copies the result here), or by hand: `node $DBE_DIR/tools/js/cli/dbe.js crawlconv --d81 crawl128-100f.d81 OUT_DIR`.
 
 | File | Disk name | Loaded to | Content |
 |---|---|---|---|
@@ -32,7 +32,7 @@ The engine files `libs/dbe0.2.stub.prg`, `libs/dbe0.2.lib.prg` are `engine/build
 ## How the data are made
 
 1. **Wall, ghost and gem data** (`crawl.dmp`, `crawl.dvg`, `walls.dts`, `walls.vrl`, `ghost.s2`, `ghost.vrl`, `gem.s2`,
-   `gem.vrl`, report `crawlconv.md`): `crawlconv.py` reads the unchanged 1.0f files from `crawl128-100f.d81` (`walls.vdc`,
+   `gem.vrl`, report `crawlconv.md`): `crawlconv` reads the unchanged 1.0f files from `crawl128-100f.d81` (`walls.vdc`,
    `walls.wsm`, `ghost.spr`, `ghosts.vdc`, `gem.spr`, `font3o.vdc`) and produces the 0.2 formats. The pictures are the same as
    in 1.0f: the wall data are the bytes of `walls.vdc` (same order), the gem is taken from the font characters of 1.0f, the ghost transparency mask is derived from what 1.0f
    draws (the converter renders the 1.0f `VMS` lists on two backgrounds). The gem now has its own 36 bytes in VRAM
@@ -43,14 +43,14 @@ The engine files `libs/dbe0.2.stub.prg`, `libs/dbe0.2.lib.prg` are `engine/build
    address).
 3. **Engine and VDC-BASIC** (in `libs/`): see below.
 
-An offline comparison (`tools/crawl01.py`, engine repository) shows that the engine 0.2 draws the same bytes as 1.0f in all
+An offline comparison (`crawl01`, engine repository, `tools/js/core/crawl/crawl01.js`) shows that the engine 0.2 draws the same bytes as 1.0f in all
 19,136 views of the level; `test/vice_crawl.py` shows the same in VICE (see `test/README.md`).
 
 ## Commands
 
 ```sh
 # all of art/dbe02/ again (needs ../dungeonboringengine; wall/ghost/gem/map data)
-python3 $DBE_DIR/tools/crawlconv.py --d81 crawl128-100f.d81 OUT_DIR       # --max-part N splits walls.vrl if needed
+node $DBE_DIR/tools/js/cli/dbe.js crawlconv --d81 crawl128-100f.d81 OUT_DIR   # --max-part N splits walls.vrl if needed
 python3 tools/mkdisk.py --rebuild-assets build/crawl128-110.d81            # the same, copied to art/dbe02/, and a disk
 
 # font.vrl and title.vrl
